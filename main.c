@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <limits.h>
 
 /* Read the data from the input csv file into the buffer declared below */
 /* Parameter: fp: pointer to the input file                             */
@@ -52,7 +53,7 @@ int main(int argc, const char* argv[]){
 	char filename[500];
 	memset(filename, '\0', 500);
 	strcpy(filename, argv[argc-1]);
-	
+
 	//open the file
 	FILE *fp;
 	if((fp = fopen(filename, "r")) == NULL){
@@ -110,15 +111,15 @@ int main(int argc, const char* argv[]){
 		}else if(strcmp("-max", argv[i]) == 0){
 			calc_max(argv[i+1]);
 			i++;
-		
+
 		}else if(strcmp("-min", argv[i]) == 0){
 			calc_min(argv[i+1]);
 			i++;
-		
+
 		}else if(strcmp("-mean", argv[i]) == 0){
 			calc_mean(argv[i+1]);
 			i++;
-		
+
 		}else if(strcmp("-records", argv[i]) == 0){
 			find_records(argv[i+1], argv[i+2]);
 			i+=2;
@@ -132,7 +133,7 @@ int main(int argc, const char* argv[]){
 void read_into_buffer(FILE *fp){
 	int current_row = 0;
 	int current_col = 0;
-	
+
 	char c;
 	bool inside_quote = false;
 	while((c = fgetc(fp)) != EOF){
@@ -154,11 +155,42 @@ void read_into_buffer(FILE *fp){
 }
 
 void calc_max(const char *field){
-	//printf("print the result here\n");
+	int rowOfField;
+	int max =0;
+	/*for loop goes through each collumn in first row to find specified field*/
+	for(int i = 0; i<columns; i++){
+		if(buffer[0][i] == field){
+			rowOfField = i;
+		}
+	}
+	/*once field is found goes through every value in that field to find max */
+	for(int i = 0; i<rows; i++){
+		int test = atoi(buffer[rowOfField][i]);
+		if(test>max){
+			max = test;
+		}
+	}
+		printf("%d\n",&max);
 }
 
 void calc_min(const char *field){
-	//printf("print the result here\n");
+	int rowOfField;
+	int min =INT_MAX;
+	/*for loop goes through each collumn in first row to find specified field*/
+
+	for(int i = 0; i<columns; i++){
+		if(buffer[0][i] == field){
+			rowOfField = i;
+		}
+	}
+	/*once field is found goes through every value in that field to find min */
+	for(int i = 0; i<rows; i++){
+		int test = atoi(buffer[rowOfField][i]);
+		if(test<min){
+			min = test;
+		}
+	}
+		printf("%d\n",&min);
 }
 
 void calc_mean(const char *field){
