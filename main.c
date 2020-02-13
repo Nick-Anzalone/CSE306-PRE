@@ -155,42 +155,44 @@ void read_into_buffer(FILE *fp){
 }
 
 void calc_max(const char *field){
-	int rowOfField;
+	int colOfField;
 	int max =0;
 	/*for loop goes through each collumn in first row to find specified field*/
 	for(int i = 0; i<columns; i++){
-		if(buffer[0][i] == field){
-			rowOfField = i;
+		int comp = strcmp(buffer[0][i],field);
+		if(comp == 0){
+			colOfField = i;
 		}
 	}
 	/*once field is found goes through every value in that field to find max */
 	for(int i = 0; i<rows; i++){
-		int test = atoi(buffer[rowOfField][i]);
+		int test = atoi(buffer[i][colOfField]);
 		if(test>max){
 			max = test;
 		}
 	}
-		printf("%d\n",&max);
+		printf("%d\n",max);
 }
 
 void calc_min(const char *field){
-	int rowOfField;
+	int colOfField;
 	int min =INT_MAX;
 	/*for loop goes through each collumn in first row to find specified field*/
 
 	for(int i = 0; i<columns; i++){
-		if(buffer[0][i] == field){
-			rowOfField = i;
+		int comp = strcmp(buffer[0][i],field);
+		if(comp == 0){
+			colOfField = i;
 		}
 	}
 	/*once field is found goes through every value in that field to find min */
 	for(int i = 0; i<rows; i++){
-		int test = atoi(buffer[rowOfField][i]);
+		int test = atoi(buffer[i][colOfField]);
 		if(test<min){
 			min = test;
 		}
 	}
-		printf("%d\n",&min);
+		printf("%d\n",min);
 }
 
 void calc_mean(const char *field){
