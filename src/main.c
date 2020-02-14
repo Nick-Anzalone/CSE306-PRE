@@ -31,8 +31,12 @@ void calc_mean(const char *field);
 /*             value: string containing the value being looked for       */
 void find_records(const char *field, const char *value);
 
+
+/* Initialize some of the global variables */
 void init();
 
+
+/* print the final results */
 void print_results();
 
 /* A 2-d array storing the data from the input csv file       */
@@ -50,16 +54,31 @@ int columns;
 //        1: treat the first record as a header record                      //
 int h;
 
+// r/f will be set to 1 once -r/-f flags are received. Used for //
+// preventing printing multiple -r -f results                   //
 int r;
 int f;
 
+//Stores the fields for -max flags in case the user wants to //
+//use -max multiple times in a single command                //
 stringList *maxFields;
+
+//stores the fields for -min flags
 stringList *minFields;
+
+//stores the fields for -mean flags
 stringList *meanFields;
+
+//stores the fields for -record flags
 stringList *recordFields;
+
+//stores the values for -record flags
 stringList *recordValues;
 
+//stores user input commands
 int commandList[20];
+
+//stores the current index for adding new command to commandList
 int listIndex;
 
 #define CALCMAX 0
@@ -207,12 +226,15 @@ int main(int argc, const char* argv[]){
 		}
 	}
 
+	//print the results
 	print_results();
 
 	return 0;
 }
 
 void init(){
+
+	//initialization
 	maxFields = NULL;
 	minFields = NULL;
 	meanFields = NULL;
