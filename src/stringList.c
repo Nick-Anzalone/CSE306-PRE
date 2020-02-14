@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "stringList.h"
+#include "../include/stringList.h"
 
 void SL_add(stringList *list, const char *data){
 	stringList *ptr = list;

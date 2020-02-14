@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
-#include "stringList.h"
+#include "../include/stringList.h"
 #include <float.h>
 
 /* Read the data from the input csv file into the buffer declared below */
@@ -70,6 +70,7 @@ int listIndex;
 #define CALCRECORDS 5
 
 int main(int argc, const char* argv[]){
+
 	if(argc < 3){
 		printf("invalid arguments\n");
 		exit(1);
