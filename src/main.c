@@ -5,6 +5,7 @@
 #include <limits.h>
 #include "../include/stringList.h"
 #include <float.h>
+#include <errno.h>
 
 /* Read the data from the input csv file into the buffer declared below */
 /* Parameter: fp: pointer to the input file                             */
@@ -255,6 +256,7 @@ void read_into_buffer(FILE *fp){
 
 	char c;
 	bool inside_quote = false;
+
 	while((c = fgetc(fp)) != EOF){
 		if(c == '"'){
 			inside_quote = !inside_quote;
@@ -269,7 +271,14 @@ void read_into_buffer(FILE *fp){
 			current_col = 0;
 			continue;
 		}
-		strncat(buffer[current_row][current_col], &c, 1);
+
+		/* 	Since the lines terminate with \r\n, we want to prevent \r
+			from being recorded into the values in the last column.
+		*/
+		if (c != '\r') {
+
+			strncat(buffer[current_row][current_col], &c, 1);
+		}
 	}
 }
 
@@ -292,7 +301,12 @@ void print_results(){
 			printf("%d\n", columns);
 		}
 		else if(command == CALCRECORDS){
-			printf("%d\n", rows);
+			if (h == 1) {
+				// Treat the first line as a header, therefore subtract 1 from the data records.
+				printf("%d\n", (rows-1));
+			} else {
+				printf("%d\n", rows);
+			}
 		}
 		else if(command == FINDRECORDS){
 			find_records(recordFields->data, recordValues->data);
@@ -323,8 +337,12 @@ void calc_max(const char *field){
 	for(int i = startrow; i<rows; i++){
 		double temp;
 		char *end;
+
+		//Set errno to 0 prior to strol call.
+		errno = 0;
+
 		temp = strtod(buffer[i][colOfField], &end);
-		if(end == buffer[i][colOfField]){
+		if(end == buffer[i][colOfField] || errno != 0 && temp == 0){
 			continue;
 		}
 		has_numeric = true;
@@ -336,15 +354,15 @@ void calc_max(const char *field){
 		printf("Field %s does not have numeric value in any record.\n", field);
 		exit(1);
 	}
-		printf("The maximum value in field %s is %f\n", field, max);
+	printf("%.2f\n", max);
 }
 
 void calc_min(const char *field){
 	int colOfField = -1;
- 	float min =INT_MAX;
+ 	double min =DBL_MAX;
+ 	bool has_numeric = false;
 	/*for loop goes through each collumn in first row to find specified field*/
-
-	for(int i = 0; i<columns; i++){
+ 	for(int i = 0; i<columns; i++){	
 		int comp = strcmp(buffer[0][i],field);
 		if(comp == 0){
 			colOfField = i;
@@ -355,16 +373,87 @@ void calc_min(const char *field){
 	}
 	/*once field is found goes through every value in that field to find min */
 	for(int i = 0; i<rows; i++){
-		int test = atoi(buffer[i][colOfField]);
-		if(test<min){
-			min = test;
+
+		//Bugfix to make sure non-number values don't get read.
+		char *readNumStr = buffer[i][colOfField];
+		char *endptr = NULL;
+
+		//Set errno to 0 prior to strol call.
+		errno = 0;
+
+		//Prior to bugfix: int test = atoi(buffer[i][colOfField]);
+		double test = strtod(readNumStr, &endptr);
+		
+		if (readNumStr == endptr) {
+			// Do nothing.
+			//printf("Found invalid cell where no nums were found (v1) %s", readNumStr);
+		} else if (errno != 0 && test == 0) {
+			// Do nothing.
+			//printf("Found invalid cell where no nums were found (v2) %s", readNumStr);
+		} else {
+			has_numeric = true;
+			if(test<min) {
+				min = test;
+			}
 		}
 	}
-		printf("%f\n",min);
+	if (has_numeric == false){
+		printf("Field %s does not have numeric value in any record.\n", field);
+		exit(1);
+	}
+	printf("%.2f\n",min);
 }
 
 void calc_mean(const char *field){
-	//printf("print the result here\n");
+
+	int colOfField = -1;
+ 	double sum = 0;
+ 	int n = 0;
+	bool has_numeric = false;
+
+	/*for loop goes through each collumn in first row to find specified field*/
+ 	for(int i = 0; i<columns; i++){	
+		int comp = strcmp(buffer[0][i],field);
+		if(comp == 0){
+			colOfField = i;
+		}
+	}
+	if(colOfField == -1){
+		exit(1);
+	}
+	/*once field is found goes through every value in that field to find min */
+	for(int i = 0; i<rows; i++){
+
+		char *readNumStr = buffer[i][colOfField];
+		char *endptr = NULL;
+
+		//Set errno to 0 prior to strol call.
+		errno = 0;
+
+		double test = strtod(readNumStr, &endptr);
+		
+		if (readNumStr == endptr) {
+			// Do nothing.
+			//printf("Found invalid cell where no nums were found (v1) %s", readNumStr);
+		} else if (errno != 0 && test == 0) {
+			// Do nothing.
+			//printf("Found invalid cell where no nums were found (v2) %s", readNumStr);
+		} else {
+			has_numeric = true;
+			sum += test;
+			n++;
+		}
+	}
+
+	if (has_numeric == false){
+		printf("Field %s does not have numeric value in any record.\n", field);
+		exit(1);
+	}
+
+	float average = sum / (float) n;
+	// printf("sum %d\n", sum);
+	// printf("n %d\n", n);
+	printf("%.2f\n",average);
 }
 
 void find_records(const char *field, const char *value){
