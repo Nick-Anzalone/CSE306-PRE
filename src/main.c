@@ -476,9 +476,17 @@ void find_records(const char *field, const char *value){
 		int comp = strcmp(value, buffer[i][colOfField]);
 		if(comp == 0){
 			for(int j = 0; j<columns; j++){
-				printf("%s",buffer[i][j]);
+				if(j == columns-1){
+					printf("%s",buffer[i][j]);
+					hasVal = true;
+				}else{
+
+
+				printf("%s,",buffer[i][j]);
 				hasVal = true;
 			}
+			}
+			printf("\n");
 		}
 
 	}
