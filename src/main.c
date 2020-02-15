@@ -342,7 +342,7 @@ void calc_max(const char *field){
 		errno = 0;
 
 		temp = strtod(buffer[i][colOfField], &end);
-		if(end == buffer[i][colOfField] || errno != 0 && temp == 0){
+		if(end == buffer[i][colOfField] || (errno != 0 && temp == 0)){
 			continue;
 		}
 		has_numeric = true;
@@ -362,13 +362,14 @@ void calc_min(const char *field){
  	double min =DBL_MAX;
  	bool has_numeric = false;
 	/*for loop goes through each collumn in first row to find specified field*/
- 	for(int i = 0; i<columns; i++){	
+ 	for(int i = 0; i<columns; i++){
 		int comp = strcmp(buffer[0][i],field);
 		if(comp == 0){
 			colOfField = i;
 		}
 	}
 	if(colOfField == -1){
+		printf("Field %s does not exist.\n", field);
 		exit(1);
 	}
 	/*once field is found goes through every value in that field to find min */
@@ -383,7 +384,7 @@ void calc_min(const char *field){
 
 		//Prior to bugfix: int test = atoi(buffer[i][colOfField]);
 		double test = strtod(readNumStr, &endptr);
-		
+
 		if (readNumStr == endptr) {
 			// Do nothing.
 			//printf("Found invalid cell where no nums were found (v1) %s", readNumStr);
@@ -412,13 +413,14 @@ void calc_mean(const char *field){
 	bool has_numeric = false;
 
 	/*for loop goes through each collumn in first row to find specified field*/
- 	for(int i = 0; i<columns; i++){	
+ 	for(int i = 0; i<columns; i++){
 		int comp = strcmp(buffer[0][i],field);
 		if(comp == 0){
 			colOfField = i;
 		}
 	}
 	if(colOfField == -1){
+		printf("Field %s does not exist.\n", field);
 		exit(1);
 	}
 	/*once field is found goes through every value in that field to find min */
@@ -431,7 +433,7 @@ void calc_mean(const char *field){
 		errno = 0;
 
 		double test = strtod(readNumStr, &endptr);
-		
+
 		if (readNumStr == endptr) {
 			// Do nothing.
 			//printf("Found invalid cell where no nums were found (v1) %s", readNumStr);
@@ -457,5 +459,31 @@ void calc_mean(const char *field){
 }
 
 void find_records(const char *field, const char *value){
-	//printf("print the result here\n");
+	bool hasVal = false;
+	int colOfField = -1;
+	for(int i = 0; i<columns; i++){
+		int comp = strcmp(buffer[0][i],field);
+		if(comp == 0){
+			colOfField = i;
+		}
+	}
+	if(colOfField == -1){
+		printf("Field %s does not exist.\n", field);
+		exit(1);
+	}
+
+	for(int i = 0; i<rows; i++){
+		int comp = strcmp(value, buffer[i][colOfField]);
+		if(comp == 0){
+			for(int j = 0; j<columns; j++){
+				printf("%s",buffer[i][j]);
+				hasVal = true;
+			}
+		}
+
+	}
+
+	if(hasVal == false){
+		printf("There are 0 recods with that Value");
+	}
 }
