@@ -492,6 +492,6 @@ void find_records(const char *field, const char *value){
 	}
 
 	if(hasVal == false){
-		printf("There are 0 recods with that Value");
+		printf("There are 0 recods with that Value\n");
 	}
 }

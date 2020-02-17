@@ -1,0 +1,5 @@
+DATE,UBIT,DURATION,ACTIVITY & TOOL DESCRIPTION
+2020/02/10,hwang54,60 minutes,created main.c using vim and wrote some basic code to interpret command line input
+2020/02/12,hwang54,180 minutes,"edited main.c using vim, completed command line input interpretation, constructed a template for this project, read the input file into a 2d array, done handling -r -f -h flags"
+2020/02/13,hwang54,120 minutes,"Using vim, edited main.c to improve command line input interpretation, fixed -max function, completed the function to print final output, created stringList.c and stringList.h to store input fields, created a makefile"
+2020/02/15,hwang54,30 minutes,some bug fix
